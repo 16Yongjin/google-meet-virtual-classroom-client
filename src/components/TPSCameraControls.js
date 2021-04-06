@@ -26,8 +26,6 @@ export class TpsCameraControlsImpl extends CameraControls {
     this.touches.two = CameraControls.ACTION.TOUCH_DOLLY
     this.touches.three = CameraControls.ACTION.TOUCH_DOLLY
 
-    // this._trackObject = trackObject;
-    // this.offset = new THREE.Vector3( 0, 1, 0 );
     const offset = new THREE.Vector3(0, 1, 0)
 
     this.update = (delta) => {

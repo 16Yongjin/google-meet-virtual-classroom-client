@@ -13,18 +13,6 @@ const actionByKey = (key) => {
   return keys[key]
 }
 
-const textureByKey = (key) => {
-  const keys = {
-    Digit1: 'dirt',
-    Digit2: 'grass',
-    Digit3: 'glass',
-    Digit4: 'wood',
-    Digit5: 'log',
-  }
-
-  return keys[key]
-}
-
 export const useKeyboardControls = () => {
   const [movement, setMovement] = useState({
     moveForward: false,
@@ -33,20 +21,32 @@ export const useKeyboardControls = () => {
     moveRight: false,
     jump: false,
     sit: false,
+    moving: false,
   })
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (actionByKey(e.code)) {
-        setMovement((state) => ({ ...state, [actionByKey(e.code)]: true }))
-      }
-      if (textureByKey(e.code)) {
-        console.log(textureByKey(e.code))
+      const action = actionByKey(e.code)
+      if (action) {
+        setMovement((state) => ({
+          ...state,
+          [action]: true,
+          moving: true,
+        }))
       }
     }
     const handleKeyUp = (e) => {
-      if (actionByKey(e.code)) {
-        setMovement((state) => ({ ...state, [actionByKey(e.code)]: false }))
+      const action = actionByKey(e.code)
+      if (action) {
+        setMovement((state) => ({
+          ...state,
+          moving: Object.entries(state).some(
+            ([k, v]) => v && k !== action && k !== 'moving'
+          ),
+          [action]: false,
+        }))
+
+        console.log(action, movement)
       }
     }
 
