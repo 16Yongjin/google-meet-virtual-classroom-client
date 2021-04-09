@@ -10,6 +10,7 @@ import { Player } from './components/Player'
 import { getRandomCharacter } from './data/characters'
 import { EmotionBar } from './components/EmotionBar'
 import { useStore } from './store'
+import { Video } from './components/Video'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])
@@ -22,19 +23,21 @@ function App() {
       <Canvas>
         <Sky distance={450000} />
         <ambientLight />
-        <Suspense fallback={<mesh>loading</mesh>}></Suspense>
+        <Suspense fallback={null}>
+          <Classroom />
+        </Suspense>
+        <Video />
         <Physics>
           <Ground position={[0, -1, 0]} />
           <MyPlayer model={model} />
-
-          {remoteData
-            .filter((data) => data.id !== id)
-            .map((data) => (
-              <Player key={data.id} {...data} />
-            ))}
-
-          <Classroom />
         </Physics>
+        {remoteData
+          .filter((data) => data.id !== id)
+          .map((data) => (
+            <Suspense fallback={null}>
+              <Player key={data.id} {...data} />
+            </Suspense>
+          ))}
       </Canvas>
       <EmotionBar text={'👏'} onClick={clap} />
     </>

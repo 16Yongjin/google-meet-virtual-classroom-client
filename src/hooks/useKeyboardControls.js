@@ -45,8 +45,6 @@ export const useKeyboardControls = () => {
           ),
           [action]: false,
         }))
-
-        console.log(action, movement)
       }
     }
 

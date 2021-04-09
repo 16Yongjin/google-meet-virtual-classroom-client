@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo } from 'react'
 import { AnimationMixer, LoopOnce, LoopRepeat } from 'three'
-import { useFBX } from '@react-three/drei'
+import { Html, useFBX } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils'
 
 export const Player = React.forwardRef(
-  ({ model, action, x = 0, y = 0, z = 0, heading = 0 }, ref) => {
+  (
+    { model, action, x = 0, y = 0, z = 0, heading = 0, username = 'user' },
+    ref
+  ) => {
     // fbx 파일 불러오기
     const fbx = useFBX(model)
     // fbx 객체 복사해서 캐릭터 중복 시 발생하는 버그 막기
@@ -44,15 +47,17 @@ export const Player = React.forwardRef(
     useFrame((_, delta) => mixer.update(delta))
 
     return (
-      <>
-        <primitive
-          ref={ref}
-          object={object}
-          scale={0.005}
-          position={[x, y, z]}
-          rotation={[0, heading, 0]}
-        ></primitive>
-      </>
+      <primitive
+        ref={ref}
+        object={object}
+        scale={0.005}
+        position={[x, y, z]}
+        rotation={[0, heading, 0]}
+      >
+        <Html center position={[0, 340, 0]}>
+          <div style={{ userSelect: 'none' }}>{username}</div>
+        </Html>
+      </primitive>
     )
   }
 )
