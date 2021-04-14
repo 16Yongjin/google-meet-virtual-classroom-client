@@ -9,7 +9,7 @@ export const Video = () => {
     vid.src = '/assets/video.mp4'
     vid.crossOrigin = 'Anonymous'
     vid.loop = true
-    vid.play()
+    vid.play().catch(console.log)
     return vid
   })
 

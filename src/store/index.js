@@ -6,4 +6,9 @@ export const useStore = create((set) => ({
     set({ clapping: true })
     setTimeout(() => set({ clapping: false }))
   },
+  sketchfabModels: [
+    // '43b8a378e7a74898855fe0075215aa48'
+  ],
+  addSketchFabModel: (url) =>
+    set((state) => ({ sketchfabModels: [...state.sketchfabModels, url] })),
 }))

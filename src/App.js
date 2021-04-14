@@ -8,15 +8,19 @@ import { MyPlayer } from './components/MyPlayer'
 import { id, socket } from './network/socket'
 import { Player } from './components/Player'
 import { getRandomCharacter } from './data/characters'
-import { EmotionBar } from './components/EmotionBar'
+import { EmotionButton } from './components/EmotionBar'
 import { useStore } from './store'
 import { Video } from './components/Video'
+import { MenuBar } from './components/MenuBar'
+import { SketchFabSearch } from './components/sketchfab/Search'
+import { SketchFabModel } from './components/sketchfab/Model'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])
   const [remoteData, setRemoteData] = useState([])
   useEffect(() => socket.on('remoteData', setRemoteData), [])
   const clap = useStore((state) => state.clap)
+  const sketchfabModels = useStore((state) => state.sketchfabModels)
 
   return (
     <>
@@ -38,8 +42,16 @@ function App() {
               <Player key={data.id} {...data} />
             </Suspense>
           ))}
+        {sketchfabModels.map((uid) => (
+          <Suspense key={uid} fallback={null}>
+            <SketchFabModel key={uid} uid={uid} />
+          </Suspense>
+        ))}
       </Canvas>
-      <EmotionBar text={'👏'} onClick={clap} />
+      <MenuBar>
+        <EmotionButton text={'👏'} onClick={clap} />
+        <SketchFabSearch />
+      </MenuBar>
     </>
   )
 }
