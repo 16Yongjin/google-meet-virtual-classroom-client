@@ -1,41 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useLoader } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Box3, Vector3 } from 'three'
-import { TransformControls } from '@react-three/drei'
-import { useStore } from '../../store'
-
-const Transformable = ({ active, children, position }) => {
-  const transformControls = useRef()
-  const cameraControl = useStore((state) => state.cameraControl)
-
-  useEffect(() => {
-    if (transformControls.current) {
-      const controls = transformControls.current
-      const callback = (event) => (cameraControl.enabled = !event.value)
-      controls.addEventListener('dragging-changed', callback)
-      return () => controls.removeEventListener('dragging-changed', callback)
-    }
-  }, [])
-
-  useEffect(() => {
-    const onKeydown = ({ key }) => {
-      if (key === 'r') transformControls.current?.setMode('rotate')
-      if (key === 't') transformControls.current?.setMode('translate')
-      if (key === 'g') transformControls.current?.setMode('scale')
-    }
-    window.addEventListener('keypress', onKeydown)
-    return () => window.removeEventListener('keypress', onKeydown)
-  })
-
-  if (!active) return children
-
-  return (
-    <TransformControls ref={transformControls} position={position}>
-      {children}
-    </TransformControls>
-  )
-}
 
 export const SketchFabModel = ({ uid }) => {
   const modelUrl = `http://localhost:2002/models/${uid}/scene.gltf`
@@ -57,7 +23,7 @@ export const SketchFabModel = ({ uid }) => {
 
   const [active, setActive] = useState(false)
   return (
-    <Transformable active={active} position={[0, 1, 0]}>
+    <mesh position={[0, 1, 0]}>
       <primitive
         onClick={() => setActive(!active)}
         onPointerOver={() => setActive(true)}
@@ -66,6 +32,6 @@ export const SketchFabModel = ({ uid }) => {
         object={scene}
         scale={initialScale}
       />
-    </Transformable>
+    </mesh>
   )
 }
