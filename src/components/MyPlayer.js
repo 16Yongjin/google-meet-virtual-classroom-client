@@ -39,6 +39,7 @@ export const MyPlayer = ({ model }) => {
 
   // 서버에 데이터 처음 데이터 보내기
   const initSocket = useCallback((player, model) => {
+    if (!player) return
     const { x, y, z } = player.position
     const { y: h, x: ph } = player.rotation
     const data = { model, x, y, z, h, ph }
@@ -48,6 +49,7 @@ export const MyPlayer = ({ model }) => {
   // 0.04초마다 서버에 현재 위치 정보 보냄
   const updateSocket = useCallback(
     throttle((player) => {
+      if (!player) return
       const { x, y, z } = player.position
       const { y: h, x: ph } = player.rotation
       const data = { x, y, z, h, ph, action: actionName }
@@ -57,6 +59,8 @@ export const MyPlayer = ({ model }) => {
 
   // 현재 키보드 입력에 따라 캐릭터 위치 변경
   const move = useCallback(() => {
+    if (!player.current) return
+
     const direction = new Vector3()
     const frontVector = new Vector3(
       0,

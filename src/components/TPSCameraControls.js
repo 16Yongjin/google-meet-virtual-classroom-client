@@ -1,7 +1,8 @@
 import CameraControls from 'camera-controls'
 import * as THREE from 'three'
 import { extend, useFrame, useThree } from '@react-three/fiber'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
+import { useStore } from '../store'
 
 CameraControls.install({ THREE })
 
@@ -49,10 +50,15 @@ extend({ TpsCameraControlsImpl })
 export const TPSCameraControls = ({ trackObject }) => {
   const { camera, gl } = useThree()
   const controls = useRef()
+  const setCameraControl = useStore((state) => state.setCameraControl)
 
   useFrame((_, delta) => {
-    controls.current.update(delta)
+    controls.current?.update(delta)
   })
+
+  useEffect(() => {
+    setCameraControl(controls.current)
+  }, [setCameraControl, controls])
 
   return (
     <tpsCameraControlsImpl
