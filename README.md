@@ -1,70 +1,46 @@
-# Getting Started with Create React App
+# 구글 Meet를 3D 가상 교실로 만드는 확장 프로그램
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+21-1 종합설계 프로젝트
 
-## Available Scripts
+개발 중...
 
-In the project directory, you can run:
+![image](https://user-images.githubusercontent.com/22253556/116207597-044e7a00-a77b-11eb-8570-7557362b62b6.png)
 
-### `yarn start`
+## 기술 스택
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- React.js
+- React Three Fiber
+- React Cannon
+- Zustand
+- Tailwind
+- Socket.io
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 앱 실행 방법
 
-### `yarn test`
+### 사전 설치
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js 14 +
+- yarn
 
-### `yarn build`
+### 패키지 설치
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+프로젝트 디렉터리에서 `yarn install` 커맨드 실행
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 앱 실행
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+프로젝트 디렉터리에서 `yarn start` 커맨드 실행
 
-### `yarn eject`
+## 진행사항
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 완료
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- 캐릭터 이동, 감정표현
+- 다중 이용자 위치, 애니메이션 동기화
+- 칠판에 비디오 송출하기
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### 진행중
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- SketchFab의 3D gltf Model 불러오기
+  - 모델 검색 화면 (△)
+  - 모델 위치, 회전, 크기 조작 (O)
+  - 모델 위치, 회전, 크기 사용자간 동기화 (X)

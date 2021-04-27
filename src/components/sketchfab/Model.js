@@ -6,7 +6,7 @@ import { TransformControls } from '@react-three/drei'
 import { useStore } from '../../store'
 
 /**
- * 자식 노드
+ * 자식 노드의 위치, 회전, 크기를 조절할 수 있는 제어 UI를 제공합니다.
  *
  * @param {{
  *  children: JSXNode,
@@ -25,6 +25,12 @@ const Transformable = ({
   const cameraControl = useStore((state) => state.cameraControl)
   const [active, setActive] = useState(false)
 
+  /**
+   * 자식 노드를 마우스로 조작하는 동안 카메라가 움직이는 것을 막기 위해
+   * cameraControl.enabled를 설정하는 코드인데
+   * dragging-changed 이벤트가 작동을 안 함;;
+   *
+   */
   useEffect(() => {
     if (transformControls.current) {
       const controls = transformControls.current
@@ -37,6 +43,9 @@ const Transformable = ({
     }
   })
 
+  /**
+   * r 키 누르면 회전, t 키 누르면 위치, s 키 누르면 크기 조절할 수 있는 모드로 변경
+   */
   useEffect(() => {
     const onKeydown = ({ key }) => {
       if (key === 'r') transformControls.current?.setMode('rotate')
@@ -108,15 +117,19 @@ export const SketchFabModel = ({ uid }) => {
     scene,
   ])
 
+  // 모델이 1m 크기를 가질 수 있는 비율을 구합니다.
   const initialScale = useMemo(() => {
     const size = box.getSize(new Vector3())
     const maxLength = Math.max(size.x, size.y, size.z) || 0
     return 1 / maxLength
   }, [box])
 
+  // 모델이 TransformControls의 중간에 올 수 있도록 움직입니다.
   const modelCenter = useMemo(() => {
-    const { x, y, z } = box.getCenter(new Vector3())
-    return [x, y, z].map((p) => -p * initialScale)
+    return box
+      .getCenter(new Vector3())
+      .toArray()
+      .map((p) => -p * initialScale)
   }, [box, initialScale])
 
   return (
