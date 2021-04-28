@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { Sky } from '@react-three/drei'
 import { Physics } from '@react-three/cannon'
 import { Ground } from './components/Ground'
@@ -13,12 +13,13 @@ import { useStore } from './store'
 import { Video } from './components/Video'
 import { MenuBar } from './components/MenuBar'
 import { SketchFabSearch } from './components/sketchfab/Search'
-import { SketchFabModel } from './components/sketchfab/Model'
+import { GltfModel, SketchFabModel } from './components/sketchfab/Model'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { hasModel, sendData } from './network/service'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])
-  const [remoteData, setRemoteData] = useState([])
+  const [remoteData, setRemoteData] = useState({ players: [], models: [] })
   useEffect(() => socket.on('remoteData', setRemoteData), [])
   const clap = useStore((state) => state.clap)
   const sketchfabModels = useStore((state) => state.sketchfabModels)
@@ -36,7 +37,7 @@ function App() {
           <Ground position={[0, -1, 0]} />
           <MyPlayer model={model} />
         </Physics>
-        {remoteData
+        {remoteData.players
           .filter((data) => data.id !== id)
           .map((data) => (
             <Suspense fallback={null}>
@@ -52,6 +53,11 @@ function App() {
               <SketchFabModel key={uid} uid={uid} />
             </Suspense>
           </ErrorBoundary>
+        ))}
+        {remoteData.models.filter(model => !hasModel(model.uuid)).map(model => (
+          <Suspense key={model.uuid} fallback={null}>
+            <GltfModel {...model} />
+          </Suspense>
         ))}
       </Canvas>
       <MenuBar>

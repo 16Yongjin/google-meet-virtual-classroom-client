@@ -8,6 +8,7 @@ import { socket } from '../network/socket'
 import { useKeyboardControls } from '../hooks/useKeyboardControls'
 import { TPSCameraControls } from './TPSCameraControls'
 import { Player } from './Player'
+import { sendData, updatePlayer } from '../network/service'
 
 export const MyPlayer = ({ model }) => {
   const { camera } = useThree() // 카메라
@@ -43,6 +44,7 @@ export const MyPlayer = ({ model }) => {
     const { x, y, z } = player.position
     const { y: h, x: ph } = player.rotation
     const data = { model, x, y, z, h, ph }
+    updatePlayer(data)
     socket.emit('init', data)
   })
 
@@ -53,7 +55,8 @@ export const MyPlayer = ({ model }) => {
       const { x, y, z } = player.position
       const { y: h, x: ph } = player.rotation
       const data = { x, y, z, h, ph, action: actionName }
-      socket.emit('update', data)
+      updatePlayer(data)
+      // socket.emit('update', data)
     }, 40)
   )
 
@@ -117,6 +120,7 @@ export const MyPlayer = ({ model }) => {
   useFrame(() => {
     move()
     updateSocket(player.current)
+    sendData()
   })
 
   return (
