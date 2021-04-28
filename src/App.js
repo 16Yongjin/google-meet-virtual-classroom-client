@@ -14,6 +14,7 @@ import { Video } from './components/Video'
 import { MenuBar } from './components/MenuBar'
 import { SketchFabSearch } from './components/sketchfab/Search'
 import { SketchFabModel } from './components/sketchfab/Model'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])
@@ -43,9 +44,14 @@ function App() {
             </Suspense>
           ))}
         {sketchfabModels.map((uid) => (
-          <Suspense key={uid} fallback={null}>
-            <SketchFabModel key={uid} uid={uid} />
-          </Suspense>
+          <ErrorBoundary
+            key={uid}
+            fallback={<mesh>Could not fetch model.</mesh>}
+          >
+            <Suspense fallback={null}>
+              <SketchFabModel key={uid} uid={uid} />
+            </Suspense>
+          </ErrorBoundary>
         ))}
       </Canvas>
       <MenuBar>
