@@ -2,13 +2,14 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame, useLoader } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Box3, Vector3 } from 'three'
-import { TransformControls } from '@react-three/drei'
+import { TransformControls, Html } from '@react-three/drei'
 import { nanoid } from 'nanoid'
 import { useStore } from '../../store'
 import { throttle } from 'lodash'
 import { socket } from '../../network/socket'
 import { removeModel, updateModel } from '../../network/service'
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils'
+import { ObjectInterface } from '../ObjectInterface'
 
 /**
  * 자식 노드의 위치, 회전, 크기를 조절할 수 있는 제어 UI를 제공합니다.
@@ -110,6 +111,7 @@ const Transformable = React.forwardRef(
           onClick={() => setActive(!active)}
         >
           {children}
+          {ObjectInterface(6)}    //JH     테스트용으로 오브젝트에 인터페이스 띄우고 버튼 6개 보여주기 
         </mesh>
       )
 
@@ -200,9 +202,9 @@ export const GltfModel = ({ uid, position, scale, quaternion }) => {
       .toArray()
       .map((p) => -p * initialScale)
   }, [box, initialScale])
- 
+
   return (
-    <mesh 
+    <mesh
       position={position}
       scale={scale}
       quaternion={quaternion}>
@@ -211,7 +213,9 @@ export const GltfModel = ({ uid, position, scale, quaternion }) => {
         object={object}
         position={modelCenter}
         scale={initialScale}
-    />
+      />
     </mesh>
   )
 }
+
+
