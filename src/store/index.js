@@ -7,7 +7,7 @@ export const useStore = create((set) => ({
     setTimeout(() => set({ clapping: false }))
   },
   sketchfabModels: [],
-  addSketchFabModel: (url) =>
+  addSketchfabModel: (url) =>
     set((state) => ({ sketchfabModels: [...state.sketchfabModels, url] })),
   cameraControl: null,
   setCameraControl: (cameraControl) => set({ cameraControl }),

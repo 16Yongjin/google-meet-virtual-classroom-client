@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const SketchFabButton = ({ onClick }) => {
+export const SketchfabButton = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
