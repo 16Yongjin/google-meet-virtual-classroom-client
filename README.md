@@ -40,7 +40,7 @@
 
 ### 진행중
 
-- SketchFab의 3D gltf Model 불러오기
+- Sketchfab의 3D gltf Model 불러오기
   - 모델 검색 화면 (△)
   - 모델 위치, 회전, 크기 조작 (O)
   - 모델 위치, 회전, 크기 사용자간 동기화 (X)

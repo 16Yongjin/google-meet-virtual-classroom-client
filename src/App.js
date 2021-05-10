@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { Sky } from '@react-three/drei'
 import { Physics } from '@react-three/cannon'
 import { Ground } from './components/Ground'
@@ -12,10 +12,10 @@ import { EmotionButton } from './components/EmotionBar'
 import { useStore } from './store'
 import { Video } from './components/Video'
 import { MenuBar } from './components/MenuBar'
-import { SketchFabSearch } from './components/sketchfab/Search'
-import { GltfModel, SketchFabModel } from './components/sketchfab/Model'
+import { SketchfabSearch } from './components/sketchfab/Search'
+import { GltfModel, SketchfabModel } from './components/sketchfab/Model'
 import { ErrorBoundary } from './components/ErrorBoundary'
-import { hasModel, sendData } from './network/service'
+import { hasModel } from './network/service'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])
@@ -50,19 +50,21 @@ function App() {
             fallback={<mesh>Could not fetch model.</mesh>}
           >
             <Suspense fallback={null}>
-              <SketchFabModel key={uid} uid={uid} />
+              <SketchfabModel key={uid} uid={uid} />
             </Suspense>
           </ErrorBoundary>
         ))}
-        {remoteData.models.filter(model => !hasModel(model.uuid)).map(model => (
-          <Suspense key={model.uuid} fallback={null}>
-            <GltfModel {...model} />
-          </Suspense>
-        ))}
+        {remoteData.models
+          .filter((model) => !hasModel(model.uuid))
+          .map((model) => (
+            <Suspense key={model.uuid} fallback={null}>
+              <GltfModel {...model} />
+            </Suspense>
+          ))}
       </Canvas>
       <MenuBar>
         <EmotionButton text={'👏'} onClick={clap} />
-        <SketchFabSearch />
+        <SketchfabSearch />
       </MenuBar>
     </>
   )
