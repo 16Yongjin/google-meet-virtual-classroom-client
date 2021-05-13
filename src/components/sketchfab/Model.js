@@ -102,7 +102,14 @@ const Transformable = React.forwardRef(
       ref.current = { position, scale, quaternion }
     }, [ref, position, scale, quaternion])
 
-    if (!active)
+    if (!active) {
+      const btn_funcs = [   //JH    테스트용으로 이름과 함수 삽입
+        { name: "delete", func: "delete" },
+        { name: "move", func: (e) => { console.log(transformControls) } },
+        { name: "scale", func: () => { transformControls.current?.setMode('scale') } },
+        { name: "rotate", func: () => { transformControls.current?.setMode('rotate') } },
+        { name: "cancel", func:"cancel" },
+      ]
       return (
         <mesh
           position={position}
@@ -111,10 +118,10 @@ const Transformable = React.forwardRef(
           onClick={() => setActive(!active)}
         >
           {children}
-          {ObjectInterface(6)}    //JH     테스트용으로 오브젝트에 인터페이스 띄우고 버튼 6개 보여주기 
+          {ObjectInterface(btn_funcs)}
         </mesh>
       )
-
+    }
     return (
       <TransformControls
         ref={transformControls}
