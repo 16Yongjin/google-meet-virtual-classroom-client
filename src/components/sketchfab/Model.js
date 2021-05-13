@@ -2,11 +2,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame, useLoader } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Box3, Vector3 } from 'three'
-import { TransformControls, Html } from '@react-three/drei'
+import { TransformControls } from '@react-three/drei'
 import { nanoid } from 'nanoid'
 import { useStore } from '../../store'
-import { throttle } from 'lodash'
-import { socket } from '../../network/socket'
 import { removeModel, updateModel } from '../../network/service'
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils'
 import { ObjectInterface } from '../ObjectInterface'
@@ -35,6 +33,8 @@ const Transformable = React.forwardRef(
     const transformControls = useRef()
     const cameraControl = useStore((state) => state.cameraControl)
     const [active, setActive] = useState(false)
+    const [transformActive, setTransformActive] = useState(false)
+    const [transformMode, setTransformMode] = useState("translate")
 
     /**
      * 자식 노드를 마우스로 조작하는 동안 카메라가 움직이는 것을 막기 위해
@@ -54,18 +54,10 @@ const Transformable = React.forwardRef(
       }
     })
 
-    /**
-     * r 키 누르면 회전, t 키 누르면 위치, s 키 누르면 크기 조절할 수 있는 모드로 변경
-     */
+    //JH    r, t, g 키로 transform하던 것을 이제 버튼으로 하도록
     useEffect(() => {
-      const onKeydown = ({ key }) => {
-        if (key === 'r') transformControls.current?.setMode('rotate')
-        if (key === 't') transformControls.current?.setMode('translate')
-        if (key === 'g') transformControls.current?.setMode('scale')
-      }
-      window.addEventListener('keypress', onKeydown)
-      return () => window.removeEventListener('keypress', onKeydown)
-    })
+      transformControls.current?.setMode(transformMode)
+    }, [transformMode])
 
     /**
      * active일 때만 TransformControls을 보여주고, 아니면 그냥 mesh를 보여줌
@@ -102,40 +94,63 @@ const Transformable = React.forwardRef(
       ref.current = { position, scale, quaternion }
     }, [ref, position, scale, quaternion])
 
-    if (!active) {
-      const btn_funcs = [   //JH    테스트용으로 이름과 함수 삽입
-        { name: "delete", func: "delete" },
-        { name: "move", func: (e) => { console.log(transformControls) } },
-        { name: "scale", func: () => { transformControls.current?.setMode('scale') } },
-        { name: "rotate", func: () => { transformControls.current?.setMode('rotate') } },
-        { name: "cancel", func:"cancel" },
-      ]
+    //JH    포커스 O -> 버튼 혹은 트랜스폼 인터페이스 / 포커스 X -> 3D 모델만 
+    if (active) {
+      if (transformActive) {
+        return (
+          <TransformControls
+            ref={transformControls}
+            position={position}
+            scale={scale}
+            quaternion={quaternion}
+          >
+            <mesh onClick={() => setTransformActive(!active)}>{children}</mesh>
+          </TransformControls>
+        )
+      }
+      else {
+        const funcs = [   //JH    테스트용으로 이름과 함수 삽입 - 각 개채마다 메서드가 정의되면 이와 같은 형태로 가져오도록 해야 함
+          { name: "delete", func: "delete" },
+          { name: "move", func: () => { setTransformActive(true); setTransformMode("translate") } },
+          { name: "scale", func: () => { setTransformActive(true); setTransformMode("scale") } },
+          { name: "rotate", func: () => { setTransformActive(true); setTransformMode("rotate") } },
+          { name: "cancel", func: "cancel" },
+        ]
+        return (
+          <mesh
+            position={position}
+            scale={scale}
+            quaternion={quaternion}
+            onClick={() => setActive(!active)}
+          >
+            {children}
+            <ObjectInterface
+              btn_funcs={funcs} setActive={setActive}
+              setTransformActive={setTransformActive} setTransformMode={setTransformMode}
+            />
+          </mesh>
+        )
+      }
+    }
+    else {
       return (
         <mesh
           position={position}
           scale={scale}
           quaternion={quaternion}
-          onClick={() => setActive(!active)}
+          onClick={() => {
+            setActive(!active)
+            setTransformActive(false)
+          }}
         >
           {children}
-          {ObjectInterface(btn_funcs)}
         </mesh>
       )
     }
-    return (
-      <TransformControls
-        ref={transformControls}
-        position={position}
-        scale={scale}
-        quaternion={quaternion}
-      >
-        <mesh onClick={() => setActive(!active)}>{children}</mesh>
-      </TransformControls>
-    )
   }
 )
 
-export const SketchFabModel = ({ uid }) => {
+export const SketchfabModel = ({ uid }) => {
   const uuid = useMemo(() => nanoid(), [])
   const modelUrl = `http://localhost:2002/models/${uid}/scene.gltf`
   const { scene } = useLoader(GLTFLoader, modelUrl)
@@ -211,10 +226,7 @@ export const GltfModel = ({ uid, position, scale, quaternion }) => {
   }, [box, initialScale])
 
   return (
-    <mesh
-      position={position}
-      scale={scale}
-      quaternion={quaternion}>
+    <mesh position={position} scale={scale} quaternion={quaternion}>
       <primitive
         key="model"
         object={object}
@@ -224,5 +236,3 @@ export const GltfModel = ({ uid, position, scale, quaternion }) => {
     </mesh>
   )
 }
-
-

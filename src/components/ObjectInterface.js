@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react'
 import { Html } from '@react-three/drei'
 
-const defaultFunctions = {
-    "delete": (e) => { e.target.parentNode.hidden=true },
-    "cancel": (e) => { e.target.parentNode.hidden=true },
-}
 
-export const ObjectInterface = (btn_funcs, hide) => {
+
+export const ObjectInterface = (props) => {
+    const { btn_funcs, setActive, setTransformActive } = props
+    const defaultFunctions = {
+        "delete": (e) => { console.log("JH//    DELETE 아직 구현하지 못함.") },
+        "cancel": (e) => { setActive(false) },
+    }
+
     /**JH   오브젝트를 누르면 인터페이스 버튼을 띄운다.
      *      버튼의 위치는 예를 들어 6개의 버튼이 있으면 각각 0, 60, 120, 180, 240, 300도의 각도로 배치한다.
      */
@@ -29,7 +32,7 @@ export const ObjectInterface = (btn_funcs, hide) => {
     }
 
     return (
-        <Html hidden={hide}>
+        <Html>
             {generate_btn(num)}
         </Html>
     )
