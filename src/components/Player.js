@@ -54,7 +54,7 @@ export const Player = React.forwardRef(
         position={[x, y, z]}
         rotation={[0, heading, 0]}
       >
-        <Html center position={[0, 340, 0]}>
+        <Html center position={[0, 340, 0]} >
           <div style={{ userSelect: 'none' }}>{username}</div>
         </Html>
       </primitive>

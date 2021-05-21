@@ -9,8 +9,11 @@ import { useKeyboardControls } from '../hooks/useKeyboardControls'
 import { TPSCameraControls } from './TPSCameraControls'
 import { Player } from './Player'
 import { sendData, updatePlayer } from '../network/service'
+import MessageDelivery from './MessageInteractions'
 
 export const MyPlayer = ({ model }) => {
+  const MD = new MessageDelivery()
+
   const { camera } = useThree() // 카메라
 
   // 현재 애니메이션 이름 설정
@@ -28,7 +31,7 @@ export const MyPlayer = ({ model }) => {
     api.velocity,
   ])
 
-  const {
+  var {
     moveBackward,
     moveForward,
     moveLeft,
@@ -38,12 +41,18 @@ export const MyPlayer = ({ model }) => {
     moving,
   } = useKeyboardControls() // 키 입력
 
+  const playerPositionQueue = []    //JH  
+  MD.setAction("sit", (data) => {
+    playerPositionQueue.push({ x: data[0], y: data[1], z: data[2] })
+    sit=true
+  })
+
   // 서버에 데이터 처음 데이터 보내기
   const initSocket = useCallback((player, model) => {
     if (!player) return
     const { x, y, z } = player.position
     const { y: h, x: ph } = player.rotation
-    const data = { model, x, y, z, h, ph }
+    const data = { model, x, y, z, heading: h, ph }
     updatePlayer(data)
     socket.emit('init', data)
   })
@@ -52,9 +61,10 @@ export const MyPlayer = ({ model }) => {
   const updateSocket = useCallback(
     throttle((player) => {
       if (!player) return
+
       const { x, y, z } = player.position
       const { y: h, x: ph } = player.rotation
-      const data = { x, y, z, h, ph, action: actionName }
+      const data = { x, y, z, heading: h, ph, action: actionName }
       updatePlayer(data)
       // socket.emit('update', data)
     }, 40)
@@ -89,6 +99,10 @@ export const MyPlayer = ({ model }) => {
       position.y,
       position.z + direction.z * 0.02
     )
+    if (playerPositionQueue.length) {
+      api.position.set(playerPositionQueue[0].x, playerPositionQueue[0].y, playerPositionQueue[0].z)
+      playerPositionQueue.shift()
+    }
 
     api.velocity.set(0, velocity.current[1], 0)
 
@@ -125,7 +139,7 @@ export const MyPlayer = ({ model }) => {
 
   return (
     <>
-      <Player ref={player} model={model} action={actionName} />
+      <Player ref={player} model={model} action={actionName}/>
       {player.current && <TPSCameraControls trackObject={player.current} />}
     </>
   )
