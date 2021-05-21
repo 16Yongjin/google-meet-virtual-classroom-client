@@ -13,7 +13,7 @@ import { useStore } from './store'
 import { Video } from './components/Video'
 import { MenuBar } from './components/MenuBar'
 import { SketchfabSearch } from './components/sketchfab/Search'
-import { GltfModel, SketchfabModel } from './components/sketchfab/Model'
+import { GltfModel, SketchfabModel, StaticModel } from './components/sketchfab/Model'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { hasModel } from './network/service'
 
@@ -23,6 +23,23 @@ function App() {
   useEffect(() => socket.on('remoteData', setRemoteData), [])
   const clap = useStore((state) => state.clap)
   const sketchfabModels = useStore((state) => state.sketchfabModels)
+  
+  const staticModels = [
+    {
+      position: [0.7082807878600228, 0.4582873054201091, 0],
+      quaternion: [0, -0.7299996034527569, 0, 0.6834475685513979],
+      scale: [1.0000000000000038, 1, 1.0000000000000038],
+      uid: "41973aa1808d4a13b84c24497fc77c63",
+      uuid: "static_chair_0",
+    },
+    {
+      position: [-1.1011157035827637, 0.4582873054201091, 0.24833738803863525],
+      quaternion: [0, -0.7299996034527569, 0, 0.6834475685513979],
+      scale: [1.0000000000000038, 1, 1.0000000000000038],
+      uid: "41973aa1808d4a13b84c24497fc77c63",
+      uuid: "static_chair_1",
+    }
+  ]
 
   return (
     <>
@@ -59,6 +76,12 @@ function App() {
           .map((model) => (
             <Suspense key={model.uuid} fallback={null}>
               <GltfModel {...model} />
+            </Suspense>
+          ))}
+        {staticModels.filter((model) => !hasModel(model.uuid))
+          .map((model) => (
+            <Suspense key={model.uuid} fallback={null}>
+              <StaticModel {...model} />
             </Suspense>
           ))}
       </Canvas>

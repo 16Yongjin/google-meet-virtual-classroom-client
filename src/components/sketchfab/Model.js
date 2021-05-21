@@ -9,6 +9,8 @@ import { removeModel, updateModel } from '../../network/service'
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils'
 import { ObjectInterface } from '../ObjectInterface'
 
+import MessageDelivery from '../MessageInteractions'
+
 /**
  * 자식 노드의 위치, 회전, 크기를 조절할 수 있는 제어 UI를 제공합니다.
  *
@@ -236,3 +238,68 @@ export const GltfModel = ({ uid, position, scale, quaternion }) => {
     </mesh>
   )
 }
+
+export const StaticModel = ({ uid, position, scale, quaternion }) => {
+  const modelUrl = `http://localhost:2002/models/${uid}/scene.gltf`
+  const { scene } = useLoader(GLTFLoader, modelUrl)
+  const [active, setActive] = useState(!false)
+  const object = useMemo(() => SkeletonUtils.clone(scene), [scene])
+  const box = useMemo(() => new Box3().setFromObject(object.children[0]), [
+    object,
+  ])
+  const MD = new MessageDelivery()
+
+  // 모델이 1m 크기를 가질 수 있는 비율을 구합니다.
+  const initialScale = useMemo(() => {
+    const size = box.getSize(new Vector3())
+    const maxLength = Math.max(size.x, size.y, size.z) || 0
+    return 1 / maxLength
+  }, [box])
+
+  // 모델이 TransformControls의 중간에 올 수 있도록 움직입니다.
+  const modelCenter = useMemo(() => {
+    return box
+      .getCenter(new Vector3())
+      .toArray()
+      .map((p) => -p * initialScale)
+  }, [box, initialScale])
+
+  if (active) {
+    return (
+      <mesh position={position} scale={scale} quaternion={quaternion}>
+        <primitive
+          key="model"
+          object={object}
+          position={modelCenter}
+          scale={initialScale}
+          onClick={() => {
+            setActive(!active)
+          }}
+        />
+      </mesh>
+    )
+  }
+  else {
+    const funcs = [   //JH    테스트용으로 이름과 함수 삽입 - 각 개채마다 메서드가 정의되면 이와 같은 형태로 가져오도록 해야 함
+      { name: "sit", func: () => { MD.deliver("sit", position)} },
+    ]
+    return (
+      <mesh position={position} scale={scale} quaternion={quaternion}>
+        <primitive
+          key="model"
+          object={object}
+          position={modelCenter}
+          scale={initialScale}
+          onClick={() => {
+            setActive(!active)
+          }}
+        />
+        <ObjectInterface
+          btn_funcs={funcs} setActive={setActive}
+        />
+      </mesh>
+    )
+  }
+
+}
+
