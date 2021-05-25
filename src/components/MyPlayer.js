@@ -27,24 +27,18 @@ export const MyPlayer = ({ model }) => {
   const [player, api] = useSphere(() => ({ mass: 10, type: 'Dynamic' }))
   const velocity = useRef([0, 0, 0])
 
-  useEffect(() => api.velocity.subscribe((v) => (velocity.current = v)), [
-    api.velocity,
-  ])
+  useEffect(
+    () => api.velocity.subscribe((v) => (velocity.current = v)),
+    [api.velocity]
+  )
 
-  var {
-    moveBackward,
-    moveForward,
-    moveLeft,
-    moveRight,
-    jump,
-    sit,
-    moving,
-  } = useKeyboardControls() // 키 입력
+  let { moveBackward, moveForward, moveLeft, moveRight, jump, sit, moving } =
+    useKeyboardControls() // 키 입력
 
-  const playerPositionQueue = []    //JH  
-  MD.setAction("sit", (data) => {
+  const playerPositionQueue = [] //JH
+  MD.setAction('sit', (data) => {
     playerPositionQueue.push({ x: data[0], y: data[1], z: data[2] })
-    sit=true
+    sit = true
   })
 
   // 서버에 데이터 처음 데이터 보내기
@@ -100,7 +94,11 @@ export const MyPlayer = ({ model }) => {
       position.z + direction.z * 0.02
     )
     if (playerPositionQueue.length) {
-      api.position.set(playerPositionQueue[0].x, playerPositionQueue[0].y, playerPositionQueue[0].z)
+      api.position.set(
+        playerPositionQueue[0].x,
+        playerPositionQueue[0].y,
+        playerPositionQueue[0].z
+      )
       playerPositionQueue.shift()
     }
 
@@ -139,7 +137,7 @@ export const MyPlayer = ({ model }) => {
 
   return (
     <>
-      <Player ref={player} model={model} action={actionName}/>
+      <Player ref={player} model={model} action={actionName} />
       {player.current && <TPSCameraControls trackObject={player.current} />}
     </>
   )

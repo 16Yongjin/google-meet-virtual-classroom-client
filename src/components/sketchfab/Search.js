@@ -6,6 +6,7 @@ import {
   SearchInput,
 } from 'evergreen-ui'
 import { debounce } from 'lodash'
+import { nanoid } from 'nanoid'
 import React, { useState } from 'react'
 import { useCallback } from 'react'
 import { useEffect } from 'react'
@@ -78,7 +79,11 @@ export const SketchfabSearchList = ({ data, close }) => {
     loadModelFromServer(uid)
       .then((r) => r.json())
       .then((ok) => {
-        if (ok) addSketchfabModel(uid)
+        if (ok)
+          addSketchfabModel({
+            uid,
+            uuid: nanoid(),
+          })
       })
       .then(close)
 
