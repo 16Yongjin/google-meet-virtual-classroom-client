@@ -3,6 +3,7 @@ import { AnimationMixer, LoopOnce, LoopRepeat } from 'three'
 import { Html, useFBX } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils'
+import { getUrl } from '../config'
 
 export const Player = React.forwardRef(
   (
@@ -36,7 +37,7 @@ export const Player = React.forwardRef(
     useEffect(onAnimationChange, [mixer, object, action])
 
     // 박수 애니메이션 추가
-    const clappingAnimation = useFBX(`/assets/anims/Clapping.fbx`)
+    const clappingAnimation = useFBX(getUrl(`/assets/anims/Clapping.fbx`))
     const addClappingAnimation = () => {
       clappingAnimation.animations[0].name = 'Clapping'
       object.animations.push(clappingAnimation.animations[0])
@@ -54,7 +55,7 @@ export const Player = React.forwardRef(
         position={[x, y, z]}
         rotation={[0, heading, 0]}
       >
-        <Html center position={[0, 340, 0]} >
+        <Html center position={[0, 340, 0]}>
           <div style={{ userSelect: 'none' }}>{username}</div>
         </Html>
       </primitive>

@@ -3,10 +3,10 @@ import { socket } from './socket'
 
 const data = {
   player: {},
-  models: {}
+  models: {},
 }
 
-export const updatePlayer = player => {
+export const updatePlayer = (player) => {
   data.player = { ...data.player, ...player }
 }
 
@@ -16,7 +16,7 @@ export const updateModel = (model) => {
   } else {
     data.models[model.uuid] = {
       ...data.models[model.uuid],
-      ...model
+      ...model,
     }
   }
 }
@@ -27,8 +27,7 @@ export const removeModel = (uuid) => {
 
 export const hasModel = (uuid) => !!data.models[uuid]
 
-export const sendData = 
-  throttle(() => {
-    // console.log(data)
-    socket.emit('updateData', data)
-  }, 40)
+export const sendData = throttle(() => {
+  // console.log(data)
+  socket.emit('updateData', data)
+}, 40)

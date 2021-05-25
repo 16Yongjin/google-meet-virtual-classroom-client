@@ -1,32 +1,66 @@
-class MessageBroker{
-    constructor(){
-        this.members=[]
-    }
-    setMember(target){
-        this.members.push(target)
-    }
-    trigger(keyword, data){
-        for (let i=0;i<this.members.length;i++){
-            this.members[i].get(keyword, data)
-        }
-    }
-}
-const MB=new MessageBroker()
+class MessageBroker {
+  constructor() {
+    /** @type {MessageDelivery[]} */
+    this.members = []
+  }
 
-export default class MessageDelivery{
-    constructor(){
-        MB.setMember(this)
-        this.actions={}
+  /**
+   * 메시지 대상자 추가
+   * @param {MessageDelivery} target
+   */
+  setMember(target) {
+    this.members.push(target)
+  }
+
+  /**
+   * 이벤트 발생
+   *
+   * @param {string} keyword
+   * @param {any} data
+   */
+  trigger(keyword, data) {
+    this.members.forEach((member) => member.get(keyword, data))
+  }
+}
+
+const MB = new MessageBroker()
+
+export default class MessageDelivery {
+  constructor() {
+    MB.setMember(this)
+    /** @type { Record<string, function>} */
+    this.actions = {}
+  }
+
+  /**
+   * 이벤트 리스닝
+   *
+   * @param {string} keyword
+   * @param {function} action
+   */
+  setAction(keyword, action) {
+    this.actions[keyword] = action
+  }
+
+  /**
+   * 브로커에 메시지를 전달한다.
+   *
+   * @param {string} keyword
+   * @param {any} data
+   */
+  deliver(keyword, data = {}) {
+    MB.trigger(keyword, data)
+  }
+
+  /**
+   * 등록된 액션 실행
+   *
+   * @param {string} keyword
+   * @param {function} data
+   */
+  get(keyword, data) {
+    if (keyword in this.actions) {
+      this.actions[keyword](data)
     }
-    setAction(keyword, action){
-        this.actions[keyword]=action
-    }
-    deliver(keyword, data={}){       //브로커에 메세지를 전달한다.
-        MB.trigger(keyword, data)
-    }
-    get(keyword, data){
-        if(keyword in this.actions){
-            this.actions[keyword](data)
-        }
-    }
+  }
 }

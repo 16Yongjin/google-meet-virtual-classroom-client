@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { Sky } from '@react-three/drei'
+import { Canvas, useThree } from '@react-three/fiber'
+import { OrbitControls, Sky } from '@react-three/drei'
 import { Physics } from '@react-three/cannon'
 import { Ground } from './components/Ground'
 import { Classroom } from './components/Classroom'
@@ -13,36 +13,27 @@ import { useStore } from './store'
 import { Video } from './components/Video'
 import { MenuBar } from './components/MenuBar'
 import { SketchfabSearch } from './components/sketchfab/Search'
-import { GltfModel, SketchfabModel, StaticModel } from './components/sketchfab/Model'
+import {
+  GltfModel,
+  SketchfabModel,
+  StaticModel,
+} from './components/sketchfab/Model'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { hasModel } from './network/service'
+import { ModelDetailView } from './components/ModelDetailView'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])
   const [remoteData, setRemoteData] = useState({ players: [], models: [] })
   useEffect(() => socket.on('remoteData', setRemoteData), [])
   const clap = useStore((state) => state.clap)
+  const staticModels = useStore((state) => state.staticModels)
   const sketchfabModels = useStore((state) => state.sketchfabModels)
-  
-  const staticModels = [
-    {
-      position: [0.7082807878600228, 0.4582873054201091, 0],
-      quaternion: [0, -0.7299996034527569, 0, 0.6834475685513979],
-      scale: [1.0000000000000038, 1, 1.0000000000000038],
-      uid: "41973aa1808d4a13b84c24497fc77c63",
-      uuid: "static_chair_0",
-    },
-    {
-      position: [-1.1011157035827637, 0.4582873054201091, 0.24833738803863525],
-      quaternion: [0, -0.7299996034527569, 0, 0.6834475685513979],
-      scale: [1.0000000000000038, 1, 1.0000000000000038],
-      uid: "41973aa1808d4a13b84c24497fc77c63",
-      uuid: "static_chair_1",
-    }
-  ]
+  const expandedModel = useStore((state) => state.expandedModel)
 
   return (
     <>
+      {expandedModel && <ModelDetailView />}
       <Canvas>
         <Sky distance={450000} />
         <ambientLight />
@@ -61,13 +52,14 @@ function App() {
               <Player key={data.id} {...data} />
             </Suspense>
           ))}
-        {sketchfabModels.map((uid) => (
+        {sketchfabModels.map(({ uuid, uid }) => (
           <ErrorBoundary
-            key={uid}
+            key={uuid}
+            uuid={uuid}
             fallback={<mesh>Could not fetch model.</mesh>}
           >
             <Suspense fallback={null}>
-              <SketchfabModel key={uid} uid={uid} />
+              <SketchfabModel uid={uid} uuid={uuid} />
             </Suspense>
           </ErrorBoundary>
         ))}
@@ -78,13 +70,15 @@ function App() {
               <GltfModel {...model} />
             </Suspense>
           ))}
-        {staticModels.filter((model) => !hasModel(model.uuid))
+        {staticModels
+          .filter((model) => !hasModel(model.uuid))
           .map((model) => (
             <Suspense key={model.uuid} fallback={null}>
               <StaticModel {...model} />
             </Suspense>
           ))}
       </Canvas>
+
       <MenuBar>
         <EmotionButton text={'👏'} onClick={clap} />
         <SketchfabSearch />

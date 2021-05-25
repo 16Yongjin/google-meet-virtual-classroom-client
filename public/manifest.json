@@ -1,25 +1,32 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [
+  "name": "React Classroom",
+  "version": "1.0",
+  "manifest_version": 2,
+  "browser_action": {},
+  "content_scripts": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "matches": ["https://meet.google.com/*"],
+      "css": ["/static/css/app.css", "/static/css/content.css"],
+      "js": [
+        "/static/js/0.chunk.js",
+        "/static/js/1.chunk.js",
+        "/static/js/4.chunk.js",
+        "/static/js/content.js"
+      ],
+      "run_at": "document_end"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "content_security_policy": "script-src 'self'; script-src-elem 'self' data: blob:; worker-src 'self' data: blob:; object-src 'self'",
+  "background": {
+    "scripts": ["app/background.js"],
+    "persistent": true
+  },
+  "web_accessible_resources": ["/static/css/content.css", "/assets/*"],
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "browsingData",
+    "http://*/*",
+    "https://*/*"
+  ]
 }

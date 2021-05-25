@@ -1,0 +1,24 @@
+html,
+body,
+.frame-root,
+.frame-content {
+  width: 100%;
+  height: 100%;
+}
+
+.my-extension {
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+  color: black;
+}
+
+.my-extension h1 {
+  color: #000;
+}
+
+.my-extension iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}

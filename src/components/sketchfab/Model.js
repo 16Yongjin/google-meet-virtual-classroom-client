@@ -3,12 +3,10 @@ import { useFrame, useLoader } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Box3, Vector3 } from 'three'
 import { TransformControls } from '@react-three/drei'
-import { nanoid } from 'nanoid'
 import { useStore } from '../../store'
 import { removeModel, updateModel } from '../../network/service'
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils'
 import { ObjectInterface } from '../ObjectInterface'
-
 import MessageDelivery from '../MessageInteractions'
 
 /**
@@ -25,6 +23,8 @@ import MessageDelivery from '../MessageInteractions'
 const Transformable = React.forwardRef(
   (
     {
+      uid,
+      uuid,
       children,
       initPosition = [0, 1, 0],
       initScale = [1, 1, 1],
@@ -36,7 +36,10 @@ const Transformable = React.forwardRef(
     const cameraControl = useStore((state) => state.cameraControl)
     const [active, setActive] = useState(false)
     const [transformActive, setTransformActive] = useState(false)
-    const [transformMode, setTransformMode] = useState("translate")
+    const [transformMode, setTransformMode] = useState('translate')
+    const removeSketchfabModel = useStore((state) => state.removeSketchfabModel)
+    const removeModel = () => removeSketchfabModel(uuid)
+    const expandModel = useStore((state) => state.expandModel)
 
     /**
      * 자식 노드를 마우스로 조작하는 동안 카메라가 움직이는 것을 막기 위해
@@ -70,8 +73,11 @@ const Transformable = React.forwardRef(
 
     // Position 동기화
     const [position, setPosition] = useState(initPosition)
-    const { x: px, y: py, z: pz } =
-      transformControls.current?._worldPosition || {}
+    const {
+      x: px,
+      y: py,
+      z: pz,
+    } = transformControls.current?._worldPosition || {}
     useEffect(() => {
       if (px !== undefined) setPosition([px, py, pz])
     }, [px, py, pz])
@@ -85,8 +91,12 @@ const Transformable = React.forwardRef(
 
     // Quaternion (Rotation) 동기화
     const [quaternion, setQuaternion] = useState(initQuatern)
-    const { x: qx, y: qy, z: qz, w: qw } =
-      transformControls.current?._worldQuaternion || {}
+    const {
+      x: qx,
+      y: qy,
+      z: qz,
+      w: qw,
+    } = transformControls.current?._worldQuaternion || {}
     useEffect(() => {
       if (qx !== undefined) setQuaternion([qx, qy, qz, qw])
     }, [qx, qy, qz, qw])
@@ -96,7 +106,7 @@ const Transformable = React.forwardRef(
       ref.current = { position, scale, quaternion }
     }, [ref, position, scale, quaternion])
 
-    //JH    포커스 O -> 버튼 혹은 트랜스폼 인터페이스 / 포커스 X -> 3D 모델만 
+    //JH    포커스 O -> 버튼 혹은 트랜스폼 인터페이스 / 포커스 X -> 3D 모델만
     if (active) {
       if (transformActive) {
         return (
@@ -109,14 +119,43 @@ const Transformable = React.forwardRef(
             <mesh onClick={() => setTransformActive(!active)}>{children}</mesh>
           </TransformControls>
         )
-      }
-      else {
-        const funcs = [   //JH    테스트용으로 이름과 함수 삽입 - 각 개채마다 메서드가 정의되면 이와 같은 형태로 가져오도록 해야 함
-          { name: "delete", func: "delete" },
-          { name: "move", func: () => { setTransformActive(true); setTransformMode("translate") } },
-          { name: "scale", func: () => { setTransformActive(true); setTransformMode("scale") } },
-          { name: "rotate", func: () => { setTransformActive(true); setTransformMode("rotate") } },
-          { name: "cancel", func: "cancel" },
+      } else {
+        const actions = [
+          //JH    테스트용으로 이름과 함수 삽입 - 각 개채마다 메서드가 정의되면 이와 같은 형태로 가져오도록 해야 함
+          {
+            name: '위치 변경',
+            func: () => {
+              setTransformActive(true)
+              setTransformMode('translate')
+            },
+          },
+          {
+            name: '크기 변경',
+            func: () => {
+              setTransformActive(true)
+              setTransformMode('scale')
+            },
+          },
+          {
+            name: '회전',
+            func: () => {
+              setTransformActive(true)
+              setTransformMode('rotate')
+            },
+          },
+          {
+            name: '자세히 보기',
+            func: () => {
+              expandModel(uid)
+            },
+          },
+          {
+            name: '닫기',
+            func: () => {
+              setTransformActive(false)
+              setActive(false)
+            },
+          },
         ]
         return (
           <mesh
@@ -127,14 +166,14 @@ const Transformable = React.forwardRef(
           >
             {children}
             <ObjectInterface
-              btn_funcs={funcs} setActive={setActive}
-              setTransformActive={setTransformActive} setTransformMode={setTransformMode}
+              actions={actions}
+              setActive={setActive}
+              onRemove={removeModel}
             />
           </mesh>
         )
       }
-    }
-    else {
+    } else {
       return (
         <mesh
           position={position}
@@ -152,14 +191,14 @@ const Transformable = React.forwardRef(
   }
 )
 
-export const SketchfabModel = ({ uid }) => {
-  const uuid = useMemo(() => nanoid(), [])
+export const SketchfabModel = ({ uuid, uid }) => {
   const modelUrl = `http://localhost:2002/models/${uid}/scene.gltf`
   const { scene } = useLoader(GLTFLoader, modelUrl)
   const object = useMemo(() => SkeletonUtils.clone(scene), [scene])
-  const box = useMemo(() => new Box3().setFromObject(object.children[0]), [
-    object,
-  ])
+  const box = useMemo(
+    () => new Box3().setFromObject(object.children[0]),
+    [object]
+  )
   const transformControl = useRef()
 
   // 모델이 1m 크기를 가질 수 있는 비율을 구합니다.
@@ -194,7 +233,7 @@ export const SketchfabModel = ({ uid }) => {
   })
 
   return (
-    <Transformable ref={transformControl}>
+    <Transformable uuid={uuid} uid={uid} ref={transformControl}>
       <primitive
         key="model"
         position={modelCenter}
@@ -209,9 +248,10 @@ export const GltfModel = ({ uid, position, scale, quaternion }) => {
   const modelUrl = `http://localhost:2002/models/${uid}/scene.gltf`
   const { scene } = useLoader(GLTFLoader, modelUrl)
   const object = useMemo(() => SkeletonUtils.clone(scene), [scene])
-  const box = useMemo(() => new Box3().setFromObject(object.children[0]), [
-    object,
-  ])
+  const box = useMemo(
+    () => new Box3().setFromObject(object.children[0]),
+    [object]
+  )
   // 모델이 1m 크기를 가질 수 있는 비율을 구합니다.
   const initialScale = useMemo(() => {
     const size = box.getSize(new Vector3())
@@ -239,15 +279,18 @@ export const GltfModel = ({ uid, position, scale, quaternion }) => {
   )
 }
 
-export const StaticModel = ({ uid, position, scale, quaternion }) => {
+export const StaticModel = ({ uuid, uid, position, scale, quaternion }) => {
   const modelUrl = `http://localhost:2002/models/${uid}/scene.gltf`
   const { scene } = useLoader(GLTFLoader, modelUrl)
-  const [active, setActive] = useState(!false)
+  const [active, setActive] = useState(false)
   const object = useMemo(() => SkeletonUtils.clone(scene), [scene])
-  const box = useMemo(() => new Box3().setFromObject(object.children[0]), [
-    object,
-  ])
+  const box = useMemo(
+    () => new Box3().setFromObject(object.children[0]),
+    [object]
+  )
   const MD = new MessageDelivery()
+  const removeStaticModel = useStore((state) => state.removeStaticModel)
+  const expandModel = useStore((state) => state.expandModel)
 
   // 모델이 1m 크기를 가질 수 있는 비율을 구합니다.
   const initialScale = useMemo(() => {
@@ -264,42 +307,43 @@ export const StaticModel = ({ uid, position, scale, quaternion }) => {
       .map((p) => -p * initialScale)
   }, [box, initialScale])
 
-  if (active) {
-    return (
-      <mesh position={position} scale={scale} quaternion={quaternion}>
-        <primitive
-          key="model"
-          object={object}
-          position={modelCenter}
-          scale={initialScale}
-          onClick={() => {
-            setActive(!active)
-          }}
-        />
-      </mesh>
-    )
-  }
-  else {
-    const funcs = [   //JH    테스트용으로 이름과 함수 삽입 - 각 개채마다 메서드가 정의되면 이와 같은 형태로 가져오도록 해야 함
-      { name: "sit", func: () => { MD.deliver("sit", position)} },
-    ]
-    return (
-      <mesh position={position} scale={scale} quaternion={quaternion}>
-        <primitive
-          key="model"
-          object={object}
-          position={modelCenter}
-          scale={initialScale}
-          onClick={() => {
-            setActive(!active)
-          }}
-        />
+  const actions = [
+    //JH    테스트용으로 이름과 함수 삽입 - 각 개채마다 메서드가 정의되면 이와 같은 형태로 가져오도록 해야 함
+    {
+      name: '앉기',
+      func: () => {
+        MD.deliver('sit', position)
+        setActive(false)
+      },
+    },
+    {
+      name: '자세히 보기',
+      func: () => {
+        expandModel(uid)
+        setActive(false)
+      },
+    },
+  ]
+
+  const removeModel = () => removeStaticModel(uuid)
+
+  return (
+    <mesh position={position} scale={scale} quaternion={quaternion}>
+      <primitive
+        key="model"
+        object={object}
+        position={modelCenter}
+        scale={initialScale}
+        onClick={() => setActive(!active)}
+        onContextMenu={() => setActive(!active)}
+      ></primitive>
+      {active && (
         <ObjectInterface
-          btn_funcs={funcs} setActive={setActive}
+          actions={actions}
+          setActive={setActive}
+          onRemove={removeModel}
         />
-      </mesh>
-    )
-  }
-
+      )}
+    </mesh>
+  )
 }
-
