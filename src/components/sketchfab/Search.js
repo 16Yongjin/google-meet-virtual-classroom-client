@@ -150,7 +150,7 @@ export const SketchfabSearchPagination = ({ data, setSearchResult }) => {
 }
 
 export const SketchfabSearch = () => {
-  const [showList, setShowList] = useState(true || false)
+  const [showList, setShowList] = useState(false)
   const [query, setQuery] = useState('food')
   const [searchResult, setSearchResult] = useState(null)
 

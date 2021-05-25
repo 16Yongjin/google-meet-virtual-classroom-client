@@ -16,6 +16,7 @@ import { SketchfabSearch } from './components/sketchfab/Search'
 import { GltfModel, SketchfabModel, StaticModel } from './components/sketchfab/Model'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { hasModel } from './network/service'
+import { getUrl } from './config'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])

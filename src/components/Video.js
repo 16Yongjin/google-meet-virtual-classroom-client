@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { useAspect } from '@react-three/drei'
 import { DoubleSide } from 'three'
+import { getUrl } from '../config'
 
 export const Video = () => {
   const [x, y] = useAspect('cover', 1800, 1000)
   const [video] = useState(() => {
     const vid = document.createElement('video')
-    vid.src = '/assets/video.mp4'
+    vid.src = getUrl('/assets/video.mp4')
     vid.crossOrigin = 'Anonymous'
     vid.loop = true
     vid.play().catch(console.log)

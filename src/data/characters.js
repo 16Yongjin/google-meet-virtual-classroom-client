@@ -1,3 +1,5 @@
+import { getUrl } from '../config'
+
 export const characters = [
   'BaseCharacter.fbx',
   'BlueSoldier_Female.fbx',
@@ -54,4 +56,15 @@ export const characters = [
 ]
 
 export const getRandomCharacter = () =>
-  `/assets/people/${characters[Math.floor(Math.random() * characters.length)]}`
+  getUrl(
+    `/assets/people/${
+      characters[Math.floor(Math.random() * characters.length)]
+    }`
+  )
+
+console.log(getRandomCharacter())
+console.log(getRandomCharacter())
+console.log(getRandomCharacter())
+console.log(getRandomCharacter())
+console.log(getRandomCharacter())
+console.log(getRandomCharacter())
