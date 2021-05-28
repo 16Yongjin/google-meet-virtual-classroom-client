@@ -22,6 +22,7 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { hasModel } from './network/service'
 import { ModelDetailView } from './components/ModelDetailView'
 import { Chairs } from './components/Chairs'
+import { Grass } from './components/Grass'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])
@@ -47,6 +48,7 @@ function App() {
           <Ground position={[0, -1, 0]} />
           <MyPlayer model={model} />
         </Physics>
+        <Grass />
         {remoteData.players
           .filter((data) => data.id !== id)
           .map((data) => (
@@ -54,6 +56,7 @@ function App() {
               <Player key={data.id} {...data} />
             </Suspense>
           ))}
+
         {sketchfabModels.map(({ uuid, uid }) => (
           <ErrorBoundary
             key={uuid}
