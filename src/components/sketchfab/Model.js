@@ -288,7 +288,7 @@ export const StaticModel = ({ uuid, uid, position, scale, quaternion }) => {
     () => new Box3().setFromObject(object.children[0]),
     [object]
   )
-  const MD = new MessageDelivery()
+  const MD = useMemo(() => new MessageDelivery(), [])
   const removeStaticModel = useStore((state) => state.removeStaticModel)
   const expandModel = useStore((state) => state.expandModel)
 

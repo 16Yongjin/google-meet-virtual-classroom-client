@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react'
-import { Canvas, useThree } from '@react-three/fiber'
-import { OrbitControls, Sky } from '@react-three/drei'
+import { Canvas } from '@react-three/fiber'
+import { Sky } from '@react-three/drei'
 import { Physics } from '@react-three/cannon'
 import { Ground } from './components/Ground'
 import { Classroom } from './components/Classroom'
@@ -21,6 +21,7 @@ import {
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { hasModel } from './network/service'
 import { ModelDetailView } from './components/ModelDetailView'
+import { Chairs } from './components/Chairs'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])
@@ -40,6 +41,7 @@ function App() {
         <Suspense fallback={null}>
           <Classroom />
         </Suspense>
+        <Chairs />
         <Video />
         <Physics>
           <Ground position={[0, -1, 0]} />
