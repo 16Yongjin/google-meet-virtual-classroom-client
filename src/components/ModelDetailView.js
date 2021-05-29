@@ -4,7 +4,7 @@ import { OrbitControls } from '@react-three/drei'
 import { useKey } from 'react-use'
 import { GltfModel } from './sketchfab/Model'
 import { useStore } from '../store'
-import { Button, CrossIcon, IconButton } from 'evergreen-ui'
+import { CrossIcon, IconButton } from 'evergreen-ui'
 
 export const ModelDetailView = () => {
   const expandedModel = useStore((state) => state.expandedModel)

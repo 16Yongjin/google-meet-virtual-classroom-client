@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react'
-import { Canvas, useThree } from '@react-three/fiber'
-import { OrbitControls, Sky } from '@react-three/drei'
+import { Canvas } from '@react-three/fiber'
+import { Sky } from '@react-three/drei'
 import { Physics } from '@react-three/cannon'
 import { Ground } from './components/Ground'
 import { Classroom } from './components/Classroom'
@@ -21,6 +21,9 @@ import {
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { hasModel } from './network/service'
 import { ModelDetailView } from './components/ModelDetailView'
+import { Chairs } from './components/Chairs'
+import { Grass } from './components/Grass'
+import './App.css'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])
@@ -40,11 +43,13 @@ function App() {
         <Suspense fallback={null}>
           <Classroom />
         </Suspense>
+        <Chairs />
         <Video />
         <Physics>
           <Ground position={[0, -1, 0]} />
           <MyPlayer model={model} />
         </Physics>
+        <Grass />
         {remoteData.players
           .filter((data) => data.id !== id)
           .map((data) => (
@@ -52,6 +57,7 @@ function App() {
               <Player key={data.id} {...data} />
             </Suspense>
           ))}
+
         {sketchfabModels.map(({ uuid, uid }) => (
           <ErrorBoundary
             key={uuid}

@@ -4,10 +4,23 @@ import { Html, useFBX } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils'
 import { getUrl } from '../config'
+import { GlobalData } from '../data/global'
+const ONE_MINUTE = 60 * 1000
+
+const showChat = (chat) => chat && Date.now() - chat.timestamp < ONE_MINUTE
 
 export const Player = React.forwardRef(
   (
-    { model, action, x = 0, y = 0, z = 0, heading = 0, username = 'user' },
+    {
+      model,
+      action,
+      x = 0,
+      y = 0,
+      z = 0,
+      heading = 0,
+      username = 'user',
+      googleId,
+    },
     ref
   ) => {
     // fbx 파일 불러오기
@@ -56,8 +69,17 @@ export const Player = React.forwardRef(
         rotation={[0, heading, 0]}
       >
         <Html center position={[0, 340, 0]}>
-          <div style={{ userSelect: 'none' }}>{username}</div>
+          <div className="username">{username}</div>
         </Html>
+
+        {showChat(GlobalData?.chats?.[googleId]) && (
+          <Html position={[0, 370, 0]} center>
+            <div className="speech-bubble">
+              <div className="speech-username">{username}</div>
+              <div>{GlobalData?.chats[googleId]?.text}</div>
+            </div>
+          </Html>
+        )}
       </primitive>
     )
   }

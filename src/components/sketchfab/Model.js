@@ -50,14 +50,15 @@ const Transformable = React.forwardRef(
     useEffect(() => {
       if (transformControls.current) {
         const controls = transformControls.current
+        console.log(controls)
         const callback = (event) => {
           console.log('control move')
-          cameraControl.enabled = !event.value
+          // cameraControl.enabled = !event.value
         }
         controls.addEventListener('dragging-changed', callback)
         return () => controls.removeEventListener('dragging-changed', callback)
       }
-    })
+    }, [transformControls.current])
 
     //JH    r, t, g 키로 transform하던 것을 이제 버튼으로 하도록
     useEffect(() => {
@@ -106,74 +107,46 @@ const Transformable = React.forwardRef(
       ref.current = { position, scale, quaternion }
     }, [ref, position, scale, quaternion])
 
+    const actions = [
+      //JH    테스트용으로 이름과 함수 삽입 - 각 개채마다 메서드가 정의되면 이와 같은 형태로 가져오도록 해야 함
+      {
+        name: '위치 변경',
+        func: () => {
+          setTransformActive(true)
+          setTransformMode('translate')
+        },
+      },
+      {
+        name: '크기 변경',
+        func: () => {
+          setTransformActive(true)
+          setTransformMode('scale')
+        },
+      },
+      {
+        name: '회전',
+        func: () => {
+          setTransformActive(true)
+          setTransformMode('rotate')
+        },
+      },
+      {
+        name: '자세히 보기',
+        func: () => {
+          expandModel(uid)
+        },
+      },
+      {
+        name: '닫기',
+        func: () => {
+          setTransformActive(false)
+          setActive(false)
+        },
+      },
+    ]
+
     //JH    포커스 O -> 버튼 혹은 트랜스폼 인터페이스 / 포커스 X -> 3D 모델만
-    if (active) {
-      if (transformActive) {
-        return (
-          <TransformControls
-            ref={transformControls}
-            position={position}
-            scale={scale}
-            quaternion={quaternion}
-          >
-            <mesh onClick={() => setTransformActive(!active)}>{children}</mesh>
-          </TransformControls>
-        )
-      } else {
-        const actions = [
-          //JH    테스트용으로 이름과 함수 삽입 - 각 개채마다 메서드가 정의되면 이와 같은 형태로 가져오도록 해야 함
-          {
-            name: '위치 변경',
-            func: () => {
-              setTransformActive(true)
-              setTransformMode('translate')
-            },
-          },
-          {
-            name: '크기 변경',
-            func: () => {
-              setTransformActive(true)
-              setTransformMode('scale')
-            },
-          },
-          {
-            name: '회전',
-            func: () => {
-              setTransformActive(true)
-              setTransformMode('rotate')
-            },
-          },
-          {
-            name: '자세히 보기',
-            func: () => {
-              expandModel(uid)
-            },
-          },
-          {
-            name: '닫기',
-            func: () => {
-              setTransformActive(false)
-              setActive(false)
-            },
-          },
-        ]
-        return (
-          <mesh
-            position={position}
-            scale={scale}
-            quaternion={quaternion}
-            onClick={() => setActive(!active)}
-          >
-            {children}
-            <ObjectInterface
-              actions={actions}
-              setActive={setActive}
-              onRemove={removeModel}
-            />
-          </mesh>
-        )
-      }
-    } else {
+    if (!active) {
       return (
         <mesh
           position={position}
@@ -185,6 +158,36 @@ const Transformable = React.forwardRef(
           }}
         >
           {children}
+        </mesh>
+      )
+    }
+
+    if (transformActive) {
+      return (
+        <TransformControls
+          dragging
+          ref={transformControls}
+          position={position}
+          scale={scale}
+          quaternion={quaternion}
+        >
+          <mesh onClick={() => setTransformActive(!active)}>{children}</mesh>
+        </TransformControls>
+      )
+    } else {
+      return (
+        <mesh
+          position={position}
+          scale={scale}
+          quaternion={quaternion}
+          onClick={() => setActive(!active)}
+        >
+          {children}
+          <ObjectInterface
+            actions={actions}
+            setActive={setActive}
+            onRemove={removeModel}
+          />
         </mesh>
       )
     }
@@ -288,7 +291,7 @@ export const StaticModel = ({ uuid, uid, position, scale, quaternion }) => {
     () => new Box3().setFromObject(object.children[0]),
     [object]
   )
-  const MD = new MessageDelivery()
+  const MD = useMemo(() => new MessageDelivery(), [])
   const removeStaticModel = useStore((state) => state.removeStaticModel)
   const expandModel = useStore((state) => state.expandModel)
 
