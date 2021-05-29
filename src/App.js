@@ -23,6 +23,7 @@ import { hasModel } from './network/service'
 import { ModelDetailView } from './components/ModelDetailView'
 import { Chairs } from './components/Chairs'
 import { Grass } from './components/Grass'
+import './App.css'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])

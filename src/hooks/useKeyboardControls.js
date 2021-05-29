@@ -26,6 +26,8 @@ export const useKeyboardControls = () => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (e.target.tagName === 'TEXTAREA') return
+
       const action = actionByKey(e.code)
       if (action) {
         setMovement((state) => ({
@@ -36,6 +38,8 @@ export const useKeyboardControls = () => {
       }
     }
     const handleKeyUp = (e) => {
+      if (e.target.tagName === 'TEXTAREA') return
+
       const action = actionByKey(e.code)
       if (action) {
         setMovement((state) => ({

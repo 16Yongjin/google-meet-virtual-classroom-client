@@ -10,6 +10,7 @@ import { TPSCameraControls } from './TPSCameraControls'
 import { Player } from './Player'
 import { sendData, updatePlayer } from '../network/service'
 import MessageDelivery from './MessageInteractions'
+import { GlobalData } from '../data/global'
 
 export const MyPlayer = ({ model }) => {
   const MD = useMemo(() => new MessageDelivery(), [])
@@ -35,8 +36,17 @@ export const MyPlayer = ({ model }) => {
   const initSocket = useCallback((player, model) => {
     if (!player) return
     const { x, y, z } = player.position
-    const { y: h, x: ph } = player.rotation
-    const data = { model, x, y, z, heading: h, ph }
+    const { y: heading, x: ph } = player.rotation
+    const data = {
+      model,
+      x,
+      y,
+      z,
+      heading,
+      ph,
+      googleId: GlobalData.myId,
+      username: GlobalData.myName,
+    }
     updatePlayer(data)
     socket.emit('init', data)
   }, [])
@@ -47,8 +57,8 @@ export const MyPlayer = ({ model }) => {
       if (!player) return
 
       const { x, y, z } = player.position
-      const { y: h, x: ph } = player.rotation
-      const data = { x, y, z, heading: h, ph, action: actionName }
+      const { y: heading, x: ph } = player.rotation
+      const data = { x, y, z, heading, ph, action: actionName }
       updatePlayer(data)
     }, 40),
     [actionName]
@@ -126,7 +136,13 @@ export const MyPlayer = ({ model }) => {
 
   return (
     <>
-      <Player ref={player} model={model} action={actionName} />
+      <Player
+        ref={player}
+        model={model}
+        action={actionName}
+        username={GlobalData?.myName}
+        googleId={GlobalData?.myId}
+      />
       {player.current && <TPSCameraControls trackObject={player.current} />}
     </>
   )

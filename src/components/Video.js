@@ -1,29 +1,22 @@
-import React, { useState } from 'react'
-import { useAspect } from '@react-three/drei'
+import React, { useMemo } from 'react'
 import { DoubleSide } from 'three'
-import { getUrl } from '../config'
+import { GlobalData } from '../data/global'
 
 export const Video = () => {
-  const [x, y] = useAspect('cover', 1800, 1000)
-  const [video] = useState(() => {
-    const vid = document.createElement('video')
-    vid.src = getUrl('/assets/video.mp4')
-    vid.crossOrigin = 'Anonymous'
-    vid.loop = true
-    vid.play().catch(console.log)
-    return vid
-  })
+  const video = useMemo(() => GlobalData.video, [GlobalData.video])
 
   return (
     <mesh
-      onClick={() => video.play()}
+      onClick={() => GlobalData?.video?.play()}
       position={[1.52, 1.55, 6.6]}
       rotation={[0, -Math.PI, 0]}
     >
       <planeBufferGeometry args={[4.1, 2.4]} />
-      <meshStandardMaterial side={DoubleSide}>
-        <videoTexture attach="map" args={[video]} />
-      </meshStandardMaterial>
+      {video && (
+        <meshStandardMaterial side={DoubleSide}>
+          <videoTexture attach="map" args={[video]} />
+        </meshStandardMaterial>
+      )}
     </mesh>
   )
 }

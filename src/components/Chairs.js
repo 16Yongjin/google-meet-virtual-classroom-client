@@ -9,7 +9,7 @@ export const Chair = ({ position }) => {
   return (
     <mesh
       position={position}
-      scale={0.4}
+      scale={0.3}
       visible={active}
       onPointerEnter={() => setActive(true)}
       onPointerLeave={() => setActive(false)}
