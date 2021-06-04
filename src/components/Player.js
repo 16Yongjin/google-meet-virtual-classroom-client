@@ -56,6 +56,20 @@ export const Player = React.forwardRef(
       object.animations.push(clappingAnimation.animations[0])
     }
     useEffect(addClappingAnimation, [])
+    // 춤 애니메이션 추가
+    const twistDanceAnimation = useFBX(getUrl(`/assets/anims/TwistDance.fbx`))
+    const addTwistDanceAnimation = () => {
+      twistDanceAnimation.animations[0].name = 'TwistDance'
+      object.animations.push(twistDanceAnimation.animations[0])
+    }
+    // shrug 애니메이션 추가
+    useEffect(addTwistDanceAnimation, [])
+    const shruggingAnimation = useFBX(getUrl(`/assets/anims/Shrugging.fbx`))
+    const addShruggingAnimation = () => {
+      shruggingAnimation.animations[0].name = 'Shrugging'
+      object.animations.push(shruggingAnimation.animations[0])
+    }
+    useEffect(addShruggingAnimation, [])
 
     // 애니메이션 시간 경과 시켜서 움직이게 하기
     useFrame((_, delta) => mixer.update(delta))

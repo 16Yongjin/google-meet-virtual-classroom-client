@@ -3,7 +3,6 @@ import { useSphere } from '@react-three/cannon'
 import { useThree, useFrame } from '@react-three/fiber'
 import { Vector3 } from 'three'
 import { throttle } from 'lodash'
-import { useStore } from '../store'
 import { socket } from '../network/socket'
 import { useKeyboardControls } from '../hooks/useKeyboardControls'
 import { TPSCameraControls } from './TPSCameraControls'
@@ -12,14 +11,18 @@ import { sendData, updatePlayer } from '../network/service'
 import MessageDelivery from './MessageInteractions'
 import { GlobalData } from '../data/global'
 
+const PersistentAction = {
+  SitDown: true,
+  Clapping: true,
+  TwistDance: true,
+  Shrugging: true,
+}
+
 export const MyPlayer = ({ model }) => {
   const MD = useMemo(() => new MessageDelivery(), [])
   const { camera } = useThree() // 카메라
   // 현재 애니메이션 이름 설정
   const [actionName, setActionName] = useState('Idle')
-  const clapping = useStore((state) => state.clapping)
-  const onClap = () => clapping && setActionName('Clapping')
-  useEffect(onClap, [clapping])
 
   // 유저를 공으로 표현함
   const [player, api] = useSphere(() => ({ mass: 10, type: 'Dynamic' }))
@@ -105,7 +108,7 @@ export const MyPlayer = ({ model }) => {
     if (sit) {
       setActionName('SitDown')
     } else {
-      if ((actionName !== 'SitDown' && actionName !== 'Clapping') || moving)
+      if (!PersistentAction[actionName] || moving)
         setActionName(moving ? 'Walk' : 'Idle')
     }
 
@@ -126,6 +129,8 @@ export const MyPlayer = ({ model }) => {
       api.position.set(x, y, z)
       setActionName('SitDown')
     })
+
+    MD.setAction('action', (action) => setActionName(action))
   }, [])
 
   useFrame(() => {

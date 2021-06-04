@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useMemo } from 'react'
+import MessageDelivery from './MessageInteractions'
 
 export const EmotionButton = ({ text, onClick }) => {
   return (
@@ -8,5 +9,26 @@ export const EmotionButton = ({ text, onClick }) => {
     >
       <span className="text-2xl">{text}</span>
     </button>
+  )
+}
+
+export const EmotionBar = () => {
+  const MD = useMemo(() => new MessageDelivery(), [])
+
+  return (
+    <div className="flex gap-2 mr-4">
+      <EmotionButton
+        text={'👏'}
+        onClick={() => MD.deliver('action', 'Clapping')}
+      />
+      <EmotionButton
+        text={'💃'}
+        onClick={() => MD.deliver('action', 'TwistDance')}
+      />
+      <EmotionButton
+        text={'🤷'}
+        onClick={() => MD.deliver('action', 'Shrugging')}
+      />
+    </div>
   )
 }

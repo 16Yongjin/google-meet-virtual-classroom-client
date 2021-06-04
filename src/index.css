@@ -34,6 +34,9 @@ body,
   user-select: none;
   font-weight: bold;
   width: max-content;
+  padding: 2px 4px;
+  background-color: white;
+  border-radius: 1rem;
 }
 
 .speech-bubble {

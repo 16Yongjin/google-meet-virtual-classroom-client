@@ -8,7 +8,7 @@ import { MyPlayer } from './components/MyPlayer'
 import { id, socket } from './network/socket'
 import { Player } from './components/Player'
 import { getRandomCharacter } from './data/characters'
-import { EmotionButton } from './components/EmotionBar'
+import { EmotionBar, EmotionButton } from './components/EmotionBar'
 import { useStore } from './store'
 import { Video } from './components/Video'
 import { MenuBar } from './components/MenuBar'
@@ -29,7 +29,6 @@ function App() {
   const model = useMemo(getRandomCharacter, [])
   const [remoteData, setRemoteData] = useState({ players: [], models: [] })
   useEffect(() => socket.on('remoteData', setRemoteData), [])
-  const clap = useStore((state) => state.clap)
   const staticModels = useStore((state) => state.staticModels)
   const sketchfabModels = useStore((state) => state.sketchfabModels)
   const expandedModel = useStore((state) => state.expandedModel)
@@ -86,7 +85,7 @@ function App() {
       </Canvas>
 
       <MenuBar>
-        <EmotionButton text={'👏'} onClick={clap} />
+        <EmotionBar />
         <SketchfabSearch />
       </MenuBar>
     </>

@@ -1,5 +1,5 @@
 export const openChatTab = () =>
-  document.querySelector('[data-tooltip="모든 사용자와 채팅"] span')?.click()
+  document.querySelector('[aria-label="모든 사용자와 채팅"]')?.click()
 
 export const getChats = (myId) => {
   const result = {}
