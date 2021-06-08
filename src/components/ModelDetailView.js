@@ -11,6 +11,8 @@ export const ModelDetailView = () => {
   const removeExpanedModel = useStore((state) => state.removeExpanedModel)
   useKey('Escape', removeExpanedModel)
 
+  if (!expandedModel) return null
+
   return (
     <>
       <Canvas style={{ backgroundColor: '#ddd' }}>

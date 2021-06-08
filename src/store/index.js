@@ -39,4 +39,8 @@ export const useStore = create((set) => ({
   expandedModel: null,
   expandModel: (url) => set({ expandedModel: url }),
   removeExpanedModel: () => set({ expandedModel: null }),
+
+  expandedVideo: null,
+  expandVideo: (video) => set({ expandedVideo: video }),
+  removeExpanedVideo: () => set({ expandedVideo: null }),
 }))

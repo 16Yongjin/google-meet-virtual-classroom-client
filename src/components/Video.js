@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { DoubleSide } from 'three'
-import { GlobalData } from '../data/global'
+import { useStore } from '../store'
 import MessageDelivery from './MessageInteractions'
 
 export const Video = () => {
@@ -10,22 +10,20 @@ export const Video = () => {
     MD.setAction('video', (video) => setVideo(video))
   }, [])
 
+  const expandVideo = useStore((state) => state.expandVideo)
+
   if (!video)
     return (
-      <mesh
-        onClick={() => GlobalData?.video?.play()}
-        position={[1.52, 1.55, 6.6]}
-        rotation={[0, -Math.PI, 0]}
-      >
+      <mesh position={[1.52, 1.55, 6.6]} rotation={[0, -Math.PI, 0]}>
         <planeBufferGeometry args={[4.1, 2.4]} />
       </mesh>
     )
 
   return (
     <mesh
-      onClick={() => GlobalData?.video?.play()}
       position={[1.52, 1.55, 6.6]}
       rotation={[0, -Math.PI, 0]}
+      onClick={() => expandVideo(video)}
     >
       <planeBufferGeometry args={[4.1, 2.4]} />
       <meshStandardMaterial side={DoubleSide}>

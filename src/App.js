@@ -24,6 +24,7 @@ import { ModelDetailView } from './components/ModelDetailView'
 import { Chairs } from './components/Chairs'
 import { Grass } from './components/Grass'
 import './App.css'
+import { VideoDetailView } from './components/VideoDetailVew'
 
 function App() {
   const model = useMemo(getRandomCharacter, [])
@@ -31,11 +32,12 @@ function App() {
   useEffect(() => socket.on('remoteData', setRemoteData), [])
   const staticModels = useStore((state) => state.staticModels)
   const sketchfabModels = useStore((state) => state.sketchfabModels)
-  const expandedModel = useStore((state) => state.expandedModel)
 
   return (
     <>
-      {expandedModel && <ModelDetailView />}
+      <ModelDetailView />
+      <VideoDetailView />
+
       <Canvas>
         <Sky distance={450000} />
         <ambientLight />
