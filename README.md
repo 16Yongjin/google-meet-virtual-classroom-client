@@ -2,7 +2,7 @@
 
 21-1 종합설계 프로젝트
 
-개발 중...
+블로그: http://yongj.in/development/google-meet-virtual-classroom/
 
 ![image](https://user-images.githubusercontent.com/22253556/116207597-044e7a00-a77b-11eb-8570-7557362b62b6.png)
 
